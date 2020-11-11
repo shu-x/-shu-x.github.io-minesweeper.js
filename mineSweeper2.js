@@ -3,6 +3,7 @@
  * 
  * 以下参考
  * マインスイーパの原型
+ * https://qiita.com/TD12734/items/81732c134ecddccd4f42
  * 
  * 要素の拡張
  * https://sbfl.net/blog/2016/09/01/custom-elements-v1/
@@ -22,6 +23,9 @@
 class MineSweeperCell extends HTMLTableCellElement{
     constructor(){
         super();
+        this.debug=false;
+        this.flgsymbol='🚩';
+        this.bombsymbol='💣';
     }
 
     init(x, y, bombFlg){
@@ -29,7 +33,14 @@ class MineSweeperCell extends HTMLTableCellElement{
         this.x = x;
         this.y = y;
         this.bombFlg = bombFlg;
+        this.flg=false;
         this.classList.add('closed');
+        if(this.debug){
+            if(this.bombFlg){
+                this.classList.remove('closed');
+                this.classList.add('.debug_closed');
+            }
+        }
         // this.isGameOver=false;
     }
 
@@ -62,7 +73,7 @@ class MineSweeperCell extends HTMLTableCellElement{
     show(){
         this.openedFlg=true;
         if(this.bombFlg){
-            this.textContent = '爆';
+            this.textContent = this.bombsymbol;
             this.showBomb();
         }else{  // 爆弾でない
             if(this.aroundBombCount > 0){
@@ -83,7 +94,7 @@ class MineSweeperCell extends HTMLTableCellElement{
             // 何もしない
             console.log('the cell has opened!');
             return;
-        }else if(this.textContent === '旗'){
+        }else if(this.textContent === this.flgsymbol){
             // 何もしない
             console.log('the cell is flag!');
             return;
@@ -93,6 +104,7 @@ class MineSweeperCell extends HTMLTableCellElement{
 
             if(this.bombFlg){ // 爆弾なら
                 msCells.forEach(c => c.show());
+                return 1;
             }else{
                 if(this.aroundBombCount === 0){
                     console.log('arounds open, because arounds is no bomb');
@@ -107,21 +119,36 @@ class MineSweeperCell extends HTMLTableCellElement{
             // 何もしない
         }else{
             if(this.textContent === ''){
-                this.textContent = '旗';
-            }else if(this.textContent === '旗'){
+                this.textContent = this.flgsymbol;
+                this.flg=true;
+                console.log('seted flag');
+            }else if(this.textContent === this.flgsymbol){
                 this.textContent = '';
+                this.flg=false;
+                console.log('unseted flag');
             }
         }
     }
 }
 
-/**
- * ゲームオーバーの処理
- */
-function gameOver(){
 
+/**
+ * クリックされたときの処理
+ * @param  
+ */
+function onClick(e){
+    let g = this.msCell.open();  // GAMEOVERなら1
+    // GAME OVERの判定
+    if(g === 1){
+        msCells.forEach(c => {
+            c.show()
+            // c.removeEventListener('click', {msCell: this.msCell, handleEvent: onClick});
+        });
+        alert('Game over');
+    }
 }
 
+// カスタム要素の追加
 customElements.define('ms-td', MineSweeperCell, { extends: 'td' });
 
 let msCells=[];
@@ -144,16 +171,27 @@ let initGame = (xSize, ySize) => {
     // console.table(msCells);
 
     msCells.forEach(msCell => {
-        msCell.addEventListener('click', ()=> {
-            msCell.open();
-            // GAME OVERの判定
-            if(msCells.filter(c => !c.openedFlg).length <= 0){
-                alert('Game over');
-            }
-        });
+        msCell.addEventListener('click', {msCell: msCell, handleEvent: onClick});
         msCell.addEventListener('contextmenu', (event)=> {
             event.preventDefault();
             msCell.setFlg();
+
+            // すべての爆弾にのみ，Flgがあれば成功
+            let clear = true;
+            msCells.forEach(c =>{
+                // xor
+                if((c.bombFlg && !c.flg) || (!c.bombFlg && c.flg)){
+                    clear = false
+                }
+            });
+            console.log('clear is '+ clear);
+            if(clear){
+                msCells.forEach(c => {
+                    c.show()
+                    // c.removeEventListener('click', {msCell: this.msCell, handleEvent: onClick});
+                });
+                alert('Clear!!!');
+            }
         });
 
         // 周囲8マスを設定
@@ -177,4 +215,4 @@ let initGame = (xSize, ySize) => {
 }
 
 
-initGame(15, 15);
+initGame(10, 10);
