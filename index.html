@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        table{
+            margin: auto;
+            border-collapse: collapse;
+        }
+        td {
+            padding: 0px;
+            width: 40px;
+            height: 40px !important;
+            text-align: center;
+            border: 3px solid rgb(60, 60, 60);
+        }
+
+        /**　未開封のクラス　*/
+        .closed {
+            background-color: lightgray;
+            color: black;
+            cursor: pointer;
+
+        }
+
+        /**　開封して爆弾だったときのクラス　*/
+        .bombed {
+            background: red;
+            color: white;
+            cursor: auto;
+        }
+
+        /**　開封して爆弾ではなかったときのクラス　*/
+        .opened {
+            background: white;
+            color: black;
+            cursor: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="msg"></div>
+    <table>
+        <tbody id="target">
+            <!-- 中身はJavaScriptでつくる -->
+        </tbody>
+    </table>
+
+    <script src="mineSweeper2.js" type="text/javascript"></script>
+</body>
+
+</html>
