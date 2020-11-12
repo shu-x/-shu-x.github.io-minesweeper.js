@@ -3,7 +3,7 @@
  * 
  * 以下参考
  * マインスイーパの原型
- * https://qiita.com/TD12734/items/81732c134ecddccd4f42
+ * https://qiita.com/kbtknc/items/e6a753d10f00d9d32549
  * 
  * 要素の拡張
  * https://sbfl.net/blog/2016/09/01/custom-elements-v1/
